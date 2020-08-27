@@ -1,0 +1,6 @@
+__pycache__
+
+public/maps/*
+!public/maps/scripts
+!public/maps/sat
+!public/maps/topo
