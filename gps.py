@@ -5,7 +5,7 @@ cloc = [-120.472, 35.1941]
 def getLocation():
     return cloc.copy()
 def gpsmain():
-    DT = .5
+    DT = 1
     while(True):
         acc = random() * .0002 - .0001
         dx=(acc*DT*DT)

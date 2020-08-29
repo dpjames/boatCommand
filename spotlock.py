@@ -55,7 +55,7 @@ def spotlockmain():
             SPOTLOCK_STATE["curgps"] = gps.getLocation()
             updateDeltas(dt)
             updateHeading()
-            sleep(.01)
+        sleep(1)
 def start():
     print("starting spotlock thread")
     t = Thread(target=spotlockmain)
