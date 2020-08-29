@@ -1,6 +1,6 @@
 const state = {
-   location_interval : 1500, //how long to wait between location polls, ms
-   spotlock_interval : 1500, //how long to wait between spotlock polls, ms
+   location_interval : 250, //how long to wait between location polls, ms
+   spotlock_interval : 250, //how long to wait between spotlock polls, ms
 };
 let locationstyle = new ol.style.Style({
    image : new ol.style.Circle({
@@ -104,6 +104,17 @@ function toggleControls(caller){
       caller.dataset.state = "open";
    }
 }
+function toggleSensors(caller){
+   const controls = document.getElementById("sensors");
+   controls.classList.toggle("hide");
+   if(caller.dataset.state === "open"){
+      caller.innerText = "^";
+      caller.dataset.state = "closed";
+   } else {
+      caller.innerText = "v";
+      caller.dataset.state = "open";
+   }
+}
 async function post(url, data){
    const response = await fetch(url, {
       method : "POST",
@@ -125,23 +136,39 @@ function spotLock(on){
    });
 }
 function spotLockLoop(){
-   const spotLockOverlay = document.getElementById("spotLockOverlay");
+   state.spotlockpoints = [[],[]];
    const looper = () => {
       fetch("/spotlock").then(v => v.json()).then(v => {
-         spotLockOverlay.innerHTML = `Lock Location : ${v.lockedgps.map(v => v.toFixed(5))}, heading angle : ${v.heading[1].toFixed(2)}`;
+         state.spotlockpoints[0].push(v.heading[0]);
+         state.spotlockpoints[1].push(v.heading[1]);
+         updateGraph("spotlockmaggraph", state.spotlockpoints[0], [0,.0004]);
+         updateGraph("spotlockdirgraph", state.spotlockpoints[1], [-180,180]);
          state.spotLock = v.running;
          if(state.spotLock) {
             setTimeout(looper, state.spotlock_interval);
          } else {
-            spotLockOverlay.classList.add("hide");
             removeSpotLockPoint();
          }
       });
    }
-   spotLockOverlay.classList.remove("hide");
    looper();
 }
-
+function updateGraph(id, arr, range){
+   const canvas = document.getElementById(id);
+   const w = canvas.width;
+   const h = canvas.height;
+   const pen = canvas.getContext("2d");
+   const positive_delta = Math.abs(Math.min(0, range[0]));
+   const min = range[0] + positive_delta; 
+   const max = range[1] + positive_delta;
+   arr = arr.slice(Math.max(arr.length - w, 0));
+   pen.clearRect(0,0,w,h);
+   for(let x = 0; x < arr.length; x++){
+      const v = arr[x] + positive_delta;
+      const y = h * ((v - min) / max);
+      pen.fillRect(x,h - y,1,y);
+   }
+}
 function addSpotLockPoint(){
    state.spotlockFeature.getGeometry().setCoordinates(state.locationFeature.getGeometry().getCoordinates());
    state.locationLayer.getSource().addFeature(state.spotlockFeature);
@@ -149,6 +176,11 @@ function addSpotLockPoint(){
 function removeSpotLockPoint(){
    state.locationLayer.getSource().removeFeature(state.spotlockFeature);
 }
-
+function toggleSettings(caller){
+   caller.classList.toggle("exitButton");
+   caller.classList.toggle("settingsButton");
+   document.querySelector('#settings').classList.toggle('hide');
+}
 
 window.onload = init;
+

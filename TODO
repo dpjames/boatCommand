@@ -15,5 +15,5 @@ getLocation(){
 }
 
 
-
+highlight in the settings menu all lakes that intersect with the current view probably just use a simple bbox algo
 

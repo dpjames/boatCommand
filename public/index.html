@@ -28,15 +28,23 @@
             <button class="tab" id="spotlockgo" onclick="spotLock(true)">GO</button>
             <button class="tab" id="spotlockstop" onclick="spotLock(false)">STOP</button>
          </div>
-         <h1>Sensors</h1>
-         <div class="vtabs">
-            <div class="vtab">1</div>
-            <div class="vtab">2</div>
-            <div class="vtab">3</div>
-         </div>
+         <h1>GPS Tracking</h1>
       </div>
-      <div id="controls-toggle" data-state="open" onclick="toggleControls(this)">&lt;</div>
-      <button id="settingsButton" onclick="document.querySelector('#settings').classList.toggle('hide');">&#9881;</button>
+      <div id="sensors" class="hide">
+         <div class="tabs">
+            <div class="tab">
+               <h1>spot lock</h1>
+               <canvas id="spotlockdirgraph"></canvas>
+               <canvas id="spotlockmaggraph"></canvas>
+            </div> 
+            <div class="tab">
+               <h1>compass</h1>
+            </div> 
+         </div> 
+      </div>
+      <button id="controlsToggle" data-state="open" onclick="toggleControls(this)">&lt;</button>
+      <button id="settingsButton" class="settingsButton" onclick="toggleSettings(this)"></button>
+      <button id="sensorsToggle" data-state="close" onclick="toggleSensors(this)">^</button>
    </div>
    <div id="settings" class="hide">
       <h1 id="locationlabel">Location</h1>

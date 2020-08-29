@@ -12,21 +12,11 @@ body {
    height : 40px;
    margin-top: 15px;
 }
-#layers {
-   width : 100%;
-}
-select {
-   height : 100px;
-   width : 250px;
-   margin-top:10px;
-   margin-left : 20px;
-}
 .locationBox{
    font-size : .7em;
-   width : 200px;
-   height : 200px;
+   width : 300px;
+   height : 300px;
    margin-left : 10px;
-   background-color :red;
    border : 1px solid black;
    display : inline-block;
    text-align : center;
@@ -64,17 +54,19 @@ h1 {
    z-index:90;
    background-color : rgba(255,255,255,.75);
 }
-#controls-toggle{
+#controlsToggle{
    position:absolute;
-   top : calc(50% - 40px);
+   top : 0;
    height : 40px;
    width : 40px;
-   left: 300px;
-   background-color:red;
+   left: 240px;
+   margin : 5px;
+   background-color : rgba(255,255,255,.75);
    border : 1px solid black;
    text-align:center;
    vertical-align:middle;
    cursor : pointer;
+   z-index : 99;
 }
 
 #spotlock {
@@ -97,16 +89,27 @@ h1 {
    padding: 5px;
    margin : 5px;
    border : 1px solid black;
-   background-color : rgba(255,255,255,.5);
    font-size:1em;
    padding : 0px 10px;
    z-index : 100;
+   width : 51px;
 }
 .vtabs {
    width : 100%;
-   height : 70px;
    display : flex;
    flex-direction : column;
+}
+.settingsButton {
+   background-color : rgba(255,255,255,.5);
+}
+.settingsButton::after {
+   content : "\2699";
+}
+.exitButton {
+   background-color :rgba(0,0,0,.25);
+}
+.exitButton::after {
+   content : "X";
 }
 .vtab {
    flex-grow : 1;   
@@ -128,9 +131,10 @@ h1 {
    margin : 5px;
    border : 1px solid black;
    border-bottom : 3px solid black;
+   text-align : center;
 }
 .active {
-   background-color : blue;
+   background-color :rgba(0,0,0,.25);
 }
 
 
@@ -147,6 +151,50 @@ h1 {
 }
 
 #controls > h1 {
+   padding-top : 10px;
    text-align : center;
    border-bottom : 1px solid black;
+}
+#sensors {
+   padding : 0;
+   margin : 0;
+   background-color : rgba(255,255,255,.75);
+   position : absolute;
+   left : 0;
+   bottom : 0;
+   height : 150px;
+   width : 100vw;
+   z-index : 70;
+}
+#sensors > .tabs {
+   height : 100%;
+}
+#sensors > .tabs > .tab {
+   height : calc(100% - 35px);
+   width : 0;
+   font-size : .5em;
+}
+#sensorsToggle {
+   position:absolute;
+   left : 0;
+   height : 40px;
+   width : 40px;
+   bottom: 0;
+   margin : 5px;
+   border : 1px solid black;
+   text-align:center;
+   vertical-align:middle;
+   cursor : pointer;
+   z-index : 71;
+   background-color : rgba(255,255,255,.75);
+}
+#sensors h1 {
+   margin-top : -10px;
+}
+#sensors canvas {
+   width : calc(100%);
+   height : 100px;
+}
+#sensors #spotlockdirgraph, #sensors #spotlockmaggraph {
+   height : 45px;
 }
