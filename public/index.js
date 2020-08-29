@@ -60,12 +60,19 @@ function locationLoop(){
 }
 async function fillLocationsSelector(){
    const locations = await (fetch("/locations").then(v => v.json()));
-   const locationsOptions = locations.map(loc => {
-      return `<option value="${loc.center}">${loc.name}</option>`;
+   const locationsHTML = locations.map(loc => {
+      return `
+         <div class="locationBox" onclick="setCenter(${JSON.stringify(loc.center)})">
+            <div>${loc.name}</div>
+            <img src="${loc.thumbnail}"></img>
+         </div>
+         `;
+         
+         //<option value="${loc.center}">${loc.name}</option>`;
    });
    const locationsElement = document.getElementById("locations");
-   locationsElement.innerHTML = locationsOptions.join("");
-   const center = locationsElement.value.split(",")
+   locationsElement.innerHTML = locationsHTML.join("");
+   const center = locations[0].center;
    updateLayerType("topo");
    setCenter(center);
 }
@@ -79,22 +86,6 @@ function updateLayerType(type){
    const source = state.baseLayer.getSource();
    const newurl = source.get("baseURL").replace("TYPE", type);
    source.setUrl(newurl);
-}
-function updateLayer(caller, op){
-   switch(op){
-      case "type":
-         updateLayerType(caller.value);
-         break;
-      case "location":
-         updateLayerLocation(caller.value);
-         break;
-      default:
-         console.error("unknown layer change op", op);
-   }
-}
-function updateLayerLocation(strParams){
-   const center = strParams.split(",");
-   setCenter(center);
 }
 function toggleControls(caller){
    const controls = document.getElementById("controls");
@@ -154,7 +145,6 @@ function addSpotLockPoint(){
 function removeSpotLockPoint(){
    state.locationLayer.getSource().removeFeature(state.spotlockFeature);
 }
-
 
 
 window.onload = init;

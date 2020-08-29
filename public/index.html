@@ -17,29 +17,22 @@
    </div>
    <div>
       <div id="controls">
-         <div id="layers">
-            <div class="label">Lake</div>
-            <select id="locations" onchange="updateLayer(this, 'location')"></select>
-            <div class="label">Type</div>
-            <select id="maptype" onchange="updateLayer(this, 'type')">
-               <option value="topo">Topo</option>
-               <option value="sat">Sat</option>
-               <option value="bary">bary</option>
-            </select>
-         </div>
-         <div id="sensors">
-            <div class="sensor"><div class="sensor-text">1</div></div>
-            <div class="sensor"><div class="sensor-text">2</div></div>
-            <div class="sensor"><div class="sensor-text">3</div></div>
-            <div class="sensor"><div class="sensor-text">4</div></div>
+         <div id="layertypetab">
+            <div onclick="updateLayerType('topo')" class="layertypetab active">Topo</div> 
+            <div onclick="updateLayerType('sat')" class="layertypetab">Sat</div> 
+            <div onclick="updateLayerType('bath')" class="layertypetab">Bath</div> 
          </div>
          <div id="spotlock">
-            <div id="spotlockgo" onclick="spotLock(true)">GO</div>
-            <div id="spotlockstop" onclick="spotLock(false)">STOP</div>
+            <button id="spotlockgo" onclick="spotLock(true)">GO</button>
+            <button id="spotlockstop" onclick="spotLock(false)">STOP</button>
          </div>
       </div>
       <div id="controls-toggle" data-state="open" onclick="toggleControls(this)">&lt;</div>
-      <div id="spotLockOverlay"></div>
+      <button id="settingsButton" onclick="document.querySelector('#settings').classList.toggle('hide');">&#9881;</button>
+   </div>
+   <div id="settings" class="hide">
+      <h1 id="locationlabel">Location</h1>
+      <div id="locations"></div>
    </div>
 </body>
 

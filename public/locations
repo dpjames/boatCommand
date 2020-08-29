@@ -1,10 +1,12 @@
 [
    {
       "name" : "lopez",
-      "center" : [-120.472, 35.1941]
+      "center" : [-120.472, 35.1941],
+      "thumbnail" : "/maps/topo/13/1354/4952.png"
    },
    {
       "name" : "santa margarita",
-      "center" : [-120.478,35.3290]
+      "center" : [-120.478,35.3290],
+      "thumbnail" : "/maps/topo/14/2710/9912.png"
    }
 ]
