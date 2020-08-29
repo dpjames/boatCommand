@@ -39,6 +39,6 @@ class Handler(SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     spotlock.start()
     gps.start()
-    server = HTTPServer(('192.168.1.12', 8888), Handler)
+    server = HTTPServer(('localhost', 8888), Handler)
     print('Starting server, use <Ctrl-C> to stop')
     server.serve_forever()

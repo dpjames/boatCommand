@@ -1,0 +1,19 @@
+add a config file for the server stuff ip address, hardware types etc
+
+allow for plug and play functions for hardware components. 
+ie make getLocation a switch on some global that controls which function is used. so like
+getLocation(){
+   switch(GPS_TYPE){
+      case "BerryGPS":
+         BerryGPS_getLocation()
+         break
+      case "AdaGPS":
+         AdaGPS_getLocation()
+         break;
+      etc.... 
+   }
+}
+
+
+
+
