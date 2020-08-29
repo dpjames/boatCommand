@@ -17,14 +17,22 @@
    </div>
    <div>
       <div id="controls">
-         <div id="layertypetab">
-            <div onclick="updateLayerType('topo')" class="layertypetab active">Topo</div> 
-            <div onclick="updateLayerType('sat')" class="layertypetab">Sat</div> 
-            <div onclick="updateLayerType('bath')" class="layertypetab">Bath</div> 
+         <h1>Map</h1>
+         <div class="tabs">
+            <div onclick="updateLayerType('topo', this)" class="tab active">Topo</div> 
+            <div onclick="updateLayerType('sat', this)" class="tab">Sat</div> 
+            <div onclick="updateLayerType('bath', this)" class="tab">Bath</div> 
          </div>
-         <div id="spotlock">
-            <button id="spotlockgo" onclick="spotLock(true)">GO</button>
-            <button id="spotlockstop" onclick="spotLock(false)">STOP</button>
+         <h1>Spotlock</h1>
+         <div class="tabs" id="spotlock">
+            <button class="tab" id="spotlockgo" onclick="spotLock(true)">GO</button>
+            <button class="tab" id="spotlockstop" onclick="spotLock(false)">STOP</button>
+         </div>
+         <h1>Sensors</h1>
+         <div class="vtabs">
+            <div class="vtab">1</div>
+            <div class="vtab">2</div>
+            <div class="vtab">3</div>
          </div>
       </div>
       <div id="controls-toggle" data-state="open" onclick="toggleControls(this)">&lt;</div>

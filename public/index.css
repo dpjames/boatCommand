@@ -81,18 +81,13 @@ h1 {
    text-align : center;
 }
 #spotlockgo {
-   height : 50px;
    background-color : green;
    border : .5px solid black;
-   margin : 5px;
    cursor:pointer;
 }
 #spotlockstop {
-   margin : 5px;
-   height : 100px;
    background-color : red;
    border : 2px solid black;
-   padding-top:20%;
    cursor:pointer;
 }
 #settingsButton {
@@ -107,14 +102,27 @@ h1 {
    padding : 0px 10px;
    z-index : 100;
 }
-
-#layertypetab {
+.vtabs {
+   width : 100%;
+   height : 70px;
+   display : flex;
+   flex-direction : column;
+}
+.vtab {
+   flex-grow : 1;   
+   padding : 10px;
+   margin : 5px;
+   border : 1px solid black;
+   border-bottom : 3px solid black;
+   text-align : center;
+}
+.tabs {
    width : 100%;
    height : 70px;
    display : flex;
    flex-direction : row;
 }
-.layertypetab {
+.tab {
    flex-grow : 1;   
    padding : 10px;
    margin : 5px;
@@ -136,4 +144,9 @@ h1 {
    margin:0;
    padding:0;
    z-index:99;
+}
+
+#controls > h1 {
+   text-align : center;
+   border-bottom : 1px solid black;
 }

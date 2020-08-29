@@ -82,7 +82,11 @@ function setCenter(center){
       zoom: 15,
    }));
 }
-function updateLayerType(type){
+function updateLayerType(type, caller){
+   if(caller){
+      caller.closest(".tabs").querySelector(".active").classList.remove("active");
+      caller.classList.add("active");
+   }
    const source = state.baseLayer.getSource();
    const newurl = source.get("baseURL").replace("TYPE", type);
    source.setUrl(newurl);
