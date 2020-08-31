@@ -1,5 +1,5 @@
 __pycache__
-
+*.pyc
 public/maps/*
 !public/maps/scripts
 !public/maps/sat

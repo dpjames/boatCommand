@@ -1,6 +1,6 @@
 const state = {
-   location_interval : 250, //how long to wait between location polls, ms
-   spotlock_interval : 250, //how long to wait between spotlock polls, ms
+   location_interval : 500, //how long to wait between location polls, ms
+   spotlock_interval : 500, //how long to wait between spotlock polls, ms
 };
 let locationstyle = new ol.style.Style({
    image : new ol.style.Circle({
