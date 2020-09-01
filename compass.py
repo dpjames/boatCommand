@@ -1,3 +1,5 @@
 from random import random
+import berry
 def getHeading():
-    return random() * 45
+    return berry.VALS["tchead"]
+

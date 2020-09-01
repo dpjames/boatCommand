@@ -1,14 +1,15 @@
 from http.server import SimpleHTTPRequestHandler
 from http.server import HTTPServer
 from urllib import parse
+import berry
 import json
 import spotlock
-import gps
+import gpsmodule
 class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         if(self.path == "/location"):
             #todo, actually find a location
-            message = json.dumps(gps.getLocation())
+            message = json.dumps(gpsmodule.getLocation())
             self.send_response(200)
             self.send_header('Content-Type',
                     'text/json; charset=utf-8')
@@ -37,8 +38,9 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(spotlock.getSpotlockData().encode("utf-8"))
 if __name__ == '__main__':
+    berry.start()
     spotlock.start()
-    gps.start()
+    gpsmodule.start()
     server = HTTPServer(('localhost', 8888), Handler)
     print('Starting server, use <Ctrl-C> to stop')
     server.serve_forever()

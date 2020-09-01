@@ -1,14 +1,12 @@
-import gps
+import gpsmodule
 import compass
 from gpiozero import Servo
 import json
 from threading import Thread
-
-
-from random import random
 from time import sleep
 from time import time
 import math
+import berry
 
 SPOTLOCK_STATE = {
     "running" : False, 
@@ -31,14 +29,15 @@ def controlSpotLock(state):
     global SPOTLOCK_STATE
     SPOTLOCK_STATE["running"] = bool(state)
     if(SPOTLOCK_STATE["running"]):
-        loc = gps.getLocation()
+        loc = gpsmodule.getLocation()
         SPOTLOCK_STATE["lockedgps"] = loc.copy()
         SPOTLOCK_STATE["curgps"] = loc
         SPOTLOCK_STATE["deltas"] = [0,0,0]
 
 def getAccelerations():
     #TODO read the sensors and apply a filter
-    return [random() - .5, random() - .5]
+    #return [random() - .5, random() - .5]
+    return [berry.VALS.xacc, berry.VALS.yacc]
 
 def updateDeltas(dt):
     acc = getAccelerations()
@@ -55,23 +54,14 @@ def updateHeading():
     SPOTLOCK_STATE["heading"] = [mag, theta]
 
 def updateMotor():
-    #calculate needed motor heading. 
-    #SPOTLOCK_STATE['heading'] is in deg where 0 is directly east, 90 is north, +-180 is west -90 is south
-    #so let us find whihch way we are looking and rotate the coordinate system acoordingly. 
-
-
     compass_heading = compass.getHeading()
-
     compx = math.cos(math.radians(compass_heading))
     compy = math.sin(math.radians(compass_heading))
-    
     our_heading = SPOTLOCK_STATE["heading"][1]
     ourx = math.cos(math.radians(our_heading))
     oury = math.sin(math.radians(our_heading))
-    
     dot = ourx * compx + oury * compy
     motor_dir = math.degrees(math.asin(dot))
-    
     if(motor_dir > 0): #positive means they are pointing together, ie with the boat
         motor_dir = 180 - motor_dir
     else:
@@ -81,7 +71,6 @@ def updateMotor():
         motor_dir = abs(motor_dir)
     else:
         motor_dir = abs(motor_dir) * -1
-
     motor_dir = min(max(motor_dir, -90), 90)
     MOTOR.value = motor_dir / 90.0
 
@@ -94,7 +83,7 @@ def spotlockmain():
             now = time()
             dt = now - then
             then = now
-            SPOTLOCK_STATE["curgps"] = gps.getLocation()
+            SPOTLOCK_STATE["curgps"] = gpsmodule.getLocation()
             updateDeltas(dt)
             updateHeading()
             updateMotor()
