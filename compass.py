@@ -1,5 +1,7 @@
 from random import random
 import berry
 def getHeading():
-    return berry.VALS["tchead"]
+    print((-1 * berry.VALS["tchead"] + 90) % 360)
+    return (-1 * berry.VALS["tchead"] + 90) % 360
+    
 

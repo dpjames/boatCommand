@@ -12,7 +12,8 @@ SPOTLOCK_STATE = {
     "running" : False, 
     "lockedgps" : [0,0],
     "curgps" : [0,0],
-    "deltas" : [0,0,0]
+    "deltas" : [0,0,0],
+    "olddir" : 0
 }
 
 MOTOR_PIN = 18
@@ -33,20 +34,20 @@ def controlSpotLock(state):
         SPOTLOCK_STATE["lockedgps"] = loc.copy()
         SPOTLOCK_STATE["curgps"] = loc
         SPOTLOCK_STATE["deltas"] = [0,0,0]
+        berry.VALS["dx"] = 0
+        berry.VALS["dy"] = 0
+        berry.VALS["xv"] = 0
+        berry.VALS["yv"] = 0
 
-def getAccelerations():
-    #TODO read the sensors and apply a filter
-    #return [random() - .5, random() - .5]
-    return [berry.VALS.xacc, berry.VALS.yacc]
 
-def updateDeltas(dt):
-    acc = getAccelerations()
-    dx = acc[0] * (dt ** 2)
-    dy = acc[0] * (dt ** 2)
-    SPOTLOCK_STATE["deltas"][0]+=dx
-    SPOTLOCK_STATE["deltas"][1]+=dy
+def updateDeltas():
+    #dx = berry.VALS["dx"]
+    #dy = berry.VALS["dy"]
+    #SPOTLOCK_STATE["deltas"][0]+=dx
+    #SPOTLOCK_STATE["deltas"][1]+=dy
     SPOTLOCK_STATE["deltas"][0] = SPOTLOCK_STATE["curgps"][0] - SPOTLOCK_STATE["lockedgps"][0]
     SPOTLOCK_STATE["deltas"][1] = SPOTLOCK_STATE["curgps"][1] - SPOTLOCK_STATE["lockedgps"][1]
+
 def updateHeading():
     vec = list(map(lambda v : (-1 * v), SPOTLOCK_STATE["deltas"]))
     mag = math.sqrt(vec[0]**2 + vec[1]**2)
@@ -72,7 +73,10 @@ def updateMotor():
     else:
         motor_dir = abs(motor_dir) * -1
     motor_dir = min(max(motor_dir, -90), 90)
+    if(abs(SPOTLOCK_STATE["olddir"] - motor_dir) < .1):
+        return
     MOTOR.value = motor_dir / 90.0
+    SPOTLOCK_STATE["olddir"] = motor_dir
 
 def spotlockmain():
     global SPOTLOCK_STATE
@@ -84,12 +88,20 @@ def spotlockmain():
             dt = now - then
             then = now
             SPOTLOCK_STATE["curgps"] = gpsmodule.getLocation()
-            updateDeltas(dt)
+            updateDeltas()
             updateHeading()
             updateMotor()
-        sleep(1)
+        else :
+            MOTOR.mid()
+        sleep(4)
+
 def start():
     print("starting spotlock thread")
     t = Thread(target=spotlockmain)
     t.start()
 
+
+if __name__ == "__main__":
+    controlSpotLock(True)
+    SPOTLOCK_STATE["lockedgps"] = [-120.462, 35.1931]
+    spotlockmain()

@@ -23,6 +23,7 @@ import math
 import IMU
 import datetime
 import os
+import json
 from threading import Thread
 
 
@@ -42,13 +43,12 @@ MAG_MEDIANTABLESIZE = 9         # Median filter table size for magnetometer. Hig
 # Calibrating the compass isnt mandatory, however a calibrated
 # compass will result in a more accurate heading value.
 
-magXmin =  0
-magYmin =  0
-magZmin =  0
-magXmax =  0
-magYmax =  0
-magZmax =  0
-
+magXmin = -1414
+magYmin = -465
+magZmin = -1200
+magXmax = 848
+magYmax = 1432
+magZmax = 836
 
 '''
 Here is an example:
@@ -194,15 +194,35 @@ if(IMU.BerryIMUversion == 99):
     sys.exit()
 IMU.initIMU()       #Initialise the accelerometer, gyroscope and compass
 
-VALS = {}
+VALS = {
+        "xv" : 0,
+        "yv" : 0,
+        "dx" : 0,
+        "dy" : 0
+        }
 
 def imumain():
     global VALS
+
+    global a
+    global b
+    global oldXMagRawValue
+    global oldYMagRawValue
+    global oldZMagRawValue
+    global oldXAccRawValue
+    global oldYAccRawValue
+    global oldZAccRawValue
+    global gyroXangle
+    global gyroYangle
+    global gyroZangle
+    global CFangleX
+    global CFangleY
+
     while(True):
         #Read the accelerometer,gyroscope and magnetometer values
-        ACCx = IMU.readACCx()
-        ACCy = IMU.readACCy()
-        ACCz = IMU.readACCz()
+        ACCx = -1 * IMU.readACCx()
+        ACCy = -1 * IMU.readACCy()
+        ACCz = -1 * IMU.readACCz()
         GYRx = IMU.readGYRx()
         GYRy = IMU.readGYRy()
         GYRz = IMU.readGYRz()
@@ -345,8 +365,8 @@ def imumain():
 
 
         #Calculate pitch and roll
-        pitch = math.asin(accXnorm)
-        roll = -math.asin(accYnorm/math.cos(pitch))
+        pitch = math.asin(accXnorm) #rotation about y
+        roll = -math.asin(accYnorm/math.cos(pitch)) #rotation about x
 
 
         #Calculate the new tilt compensated values
@@ -375,24 +395,67 @@ def imumain():
         if tiltCompensatedHeading < 0:
             tiltCompensatedHeading += 360
 
+        tiltCompensatedHeading-=13
 
         ##################### END Tilt Compensation ########################
 
 
-        #    outputString += "#  ACCX Angle %5.2f ACCY Angle %5.2f  #  " % (AccXangle, AccYangle)
-        #    outputString +="\t# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)
-        #    outputString +="\t#  CFangleX Angle %5.2f   CFangleY Angle %5.2f  #" % (CFangleX,CFangleY)
-        #    outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
-        #    outputString +="# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)
+        #outputString = "#  ACCX Angle %5.2f ACCY Angle %5.2f  #  " % (AccXangle, AccYangle)
+        #outputString +="\t# GRYX Angle %5.2f  GYRY Angle %5.2f  GYRZ Angle %5.2f # " % (gyroXangle,gyroYangle,gyroZangle)
+        #outputString +="\t#  CFangleX Angle %5.2f   CFangleY Angle %5.2f  #" % (CFangleX,CFangleY)
+        #outputString +="\t# HEADING %5.2f  tiltCompensatedHeading %5.2f #" % (heading,tiltCompensatedHeading)
+        #outputString +="# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)
+        #outputString="%5.2f, %5.2f" % (kalmanX, kalmanY)
         #slow program down a bit, makes the output more readable
-        time.sleep(0.03)
+        dt = .001
+        VALS["tchead"] = tiltCompensatedHeading
+        G_X = int((ACCx * .244 / 1000) * 100) / 100.0
+        G_Y = int((ACCy * .244 / 1000) * 100) / 100.0
+        GRAV_Y = int((math.cos(pitch)*math.sin(roll)) * 100 ) / 100.0
+        GRAV_X = int((-1 * math.sin(pitch)) * 100 ) / 100.0
 
-        vals["heading"] = heading
-        vals["tchead"] = tiltCompensatedHeading
-        vals["xacc"] = kalmanX
-        vals["yacc"] = kalmanY
+        VALS["xacc"] =int(((G_X  + 0) * 9.81) * 10) / 10.0 #convert into m/s^2
+        if(abs(VALS["xacc"]) < .5):
+            VALS["xacc"] = 0
 
+
+        VALS["yacc"] =int(((G_Y  + 0) * 9.81) * 20) / 20.0
+
+
+        VALS["xv"] += int(VALS["xacc"] * LP * 1000) / 1000.0
+        VALS["yv"] += int(VALS["yacc"] * LP * 1000) / 1000.0
+        VALS["dx"] += VALS["xv"] * LP #/ 1.11 * .00001
+        VALS["dy"] += VALS["yv"] * LP #/ 1.11 * .00001
+        global count
+        count+=1
+        if(count % 3 == 0):
+            ob = {
+                #"gx" : GRAV_X,
+                #"delta" : GRAV_X + G_X,
+                #"xa" : VALS["xacc"],
+                #"xv" : int(VALS["xv"] * 100000) / 100000.0,
+                #"dx" : int(VALS["dx"] * 100000) / 100000.0,
+                ##"gy" : GRAV_Y,
+                #"x" : G_X,
+                ##"y" : G_Y,
+                "tch" : VALS["tchead"]
+            }
+            print("\r", end=" ")
+            print(json.dumps(ob), end=" ")
+        if(count % 1000 == 0):
+            #print()
+            #print("reset")
+            VALS["xv"] = 0
+            VALS["yv"] = 0
+            VALS["dx"] = 0
+            VALS["dy"] = 0
+        time.sleep(dt)
+count = 0
 def start():
     print("starting imu thread")
     t = Thread(target=imumain)
     t.start()
+
+if __name__ == "__main__":
+    imumain()
+

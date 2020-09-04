@@ -6,6 +6,8 @@ import json
 import spotlock
 import gpsmodule
 class Handler(SimpleHTTPRequestHandler):
+    def log_message(self, format, *args):
+        pass
     def do_GET(self):
         if(self.path == "/location"):
             #todo, actually find a location
@@ -38,9 +40,13 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(spotlock.getSpotlockData().encode("utf-8"))
 if __name__ == '__main__':
-    berry.start()
-    spotlock.start()
-    gpsmodule.start()
-    server = HTTPServer(('localhost', 8888), Handler)
-    print('Starting server, use <Ctrl-C> to stop')
-    server.serve_forever()
+    try:
+        berry.start()
+        spotlock.start()
+        gpsmodule.start()
+        server = HTTPServer(('192.168.1.13', 8888), Handler)
+        print('Starting server, use <Ctrl-C> to stop')
+        server.serve_forever()
+    except Exception as e:
+        print(e)
+
