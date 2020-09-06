@@ -43,12 +43,27 @@ MAG_MEDIANTABLESIZE = 9         # Median filter table size for magnetometer. Hig
 # Calibrating the compass isnt mandatory, however a calibrated
 # compass will result in a more accurate heading value.
 
-magXmin = -1414
-magYmin = -465
-magZmin = -1200
-magXmax = 848
-magYmax = 1432
-magZmax = 836
+#magXmin = -1414
+#magYmin = -465
+#magZmin = -1200
+#magXmax = 848
+#magYmax = 1432
+#magZmax = 836
+#magXmin = -232
+#magYmin = -683
+#magZmin = -712
+#magXmax = 918
+#magYmax = 1091
+#magZmax = 813
+
+magXmin = 0
+magYmin = 0
+magZmin = 0
+magXmax = 0
+magYmax = 0
+magZmax = 0
+
+
 
 '''
 Here is an example:
@@ -365,8 +380,8 @@ def imumain():
 
 
         #Calculate pitch and roll
-        pitch = math.asin(accXnorm) #rotation about y
-        roll = -math.asin(accYnorm/math.cos(pitch)) #rotation about x
+        pitch = toFixed(math.asin(accXnorm), 100) #rotation about y
+        roll = toFixed(-math.asin(accYnorm/math.cos(pitch)), 100) #rotation about x
 
 
         #Calculate the new tilt compensated values
@@ -407,50 +422,59 @@ def imumain():
         #outputString +="# kalmanX %5.2f   kalmanY %5.2f #" % (kalmanX,kalmanY)
         #outputString="%5.2f, %5.2f" % (kalmanX, kalmanY)
         #slow program down a bit, makes the output more readable
-        dt = .001
         VALS["tchead"] = tiltCompensatedHeading
-        G_X = int((ACCx * .244 / 1000) * 100) / 100.0
-        G_Y = int((ACCy * .244 / 1000) * 100) / 100.0
-        GRAV_Y = int((math.cos(pitch)*math.sin(roll)) * 100 ) / 100.0
-        GRAV_X = int((-1 * math.sin(pitch)) * 100 ) / 100.0
 
-        VALS["xacc"] =int(((G_X  + 0) * 9.81) * 10) / 10.0 #convert into m/s^2
-        if(abs(VALS["xacc"]) < .5):
-            VALS["xacc"] = 0
-
-
-        VALS["yacc"] =int(((G_Y  + 0) * 9.81) * 20) / 20.0
-
-
-        VALS["xv"] += int(VALS["xacc"] * LP * 1000) / 1000.0
-        VALS["yv"] += int(VALS["yacc"] * LP * 1000) / 1000.0
-        VALS["dx"] += VALS["xv"] * LP #/ 1.11 * .00001
-        VALS["dy"] += VALS["yv"] * LP #/ 1.11 * .00001
+        G_X = toFixed(ACCx * .244 / 1000, 0)  
+        G_Y = toFixed(ACCy * .244 / 1000, 0)  
+        GRAV_X = toFixed(-1 * math.sin(pitch), 0)
+        GRAV_Y = toFixed(math.cos(pitch)*math.sin(roll), 0)
+        VALS["xacc"] = toFixed(GRAV_X + G_X, 0)  * 9.81 #convert into m/s^2
+        VALS["yacc"] = toFixed(G_Y  + GRAV_Y, 0) * 9.81
+        VALS["xv"] += toFixed(VALS["xacc"], 10) * LP 
+        VALS["yv"] += VALS["yacc"] * LP 
+        VALS["dx"] += toFixed(VALS["xv"], 0) * LP 
+        VALS["dy"] += toFixed(VALS["yv"], 0) * LP 
         global count
         count+=1
-        if(count % 3 == 0):
+        if(count % 1 == 0):
             ob = {
-                #"gx" : GRAV_X,
-                #"delta" : GRAV_X + G_X,
-                #"xa" : VALS["xacc"],
-                #"xv" : int(VALS["xv"] * 100000) / 100000.0,
-                #"dx" : int(VALS["dx"] * 100000) / 100000.0,
-                ##"gy" : GRAV_Y,
-                #"x" : G_X,
-                ##"y" : G_Y,
-                "tch" : VALS["tchead"]
+                #"pitch" : math.degrees(pitch),
+                #"kx" : kalmanX,
+                #"ky" : kalmanY + 180,
+                #"pg" : toFixed(-1 * math.sin(pitch), 1000),
+                #"kg" : toFixed(-1 * math.sin(math.radians(kalmanY - 180)), 1000),
+                #"gx" : G_X,
+                #"gx" : G_X,
+                #"gravx" : GRAV_X,
+                "xa" : toFixed(VALS["xacc"], 10),
+                "xv" : toFixed(VALS["xv"], 1000),
+                "dx" : toFixed(VALS["dx"], 1000),
             }
+            global mmax
+            global mmin
+            if(ob["xa"] > mmax):
+                mmax = ob["xa"]
+            if(ob["xa"] < mmin):
+                mmin = ob["xa"]
+            ob["min"] = mmin
+            ob["max"] = mmax
             print("\r", end=" ")
             print(json.dumps(ob), end=" ")
         if(count % 1000 == 0):
-            #print()
-            #print("reset")
             VALS["xv"] = 0
             VALS["yv"] = 0
             VALS["dx"] = 0
             VALS["dy"] = 0
-        time.sleep(dt)
+            mmax = 0
+            mmin = 0
 count = 0
+mmax = -10
+mmin = 10
+def toFixed(v,n):
+    if n == 0:
+        return v
+    return int(v * n) / float(n)
+
 def start():
     print("starting imu thread")
     t = Thread(target=imumain)

@@ -5,6 +5,7 @@ import berry
 import json
 import spotlock
 import gpsmodule
+import traceback
 class Handler(SimpleHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
@@ -44,9 +45,11 @@ if __name__ == '__main__':
         berry.start()
         spotlock.start()
         gpsmodule.start()
-        server = HTTPServer(('192.168.1.13', 8888), Handler)
+        server = HTTPServer(('192.168.1.13', 8000), Handler)
         print('Starting server, use <Ctrl-C> to stop')
         server.serve_forever()
     except Exception as e:
         print(e)
+        traceback.print_exc()
+
 

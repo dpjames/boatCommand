@@ -7,6 +7,7 @@ from time import sleep
 from time import time
 import math
 import berry
+import pigpio
 
 SPOTLOCK_STATE = {
     "running" : False, 
@@ -17,11 +18,11 @@ SPOTLOCK_STATE = {
 }
 
 MOTOR_PIN = 18
-MOTOR_MIN_PULSE = .0005
-MOTOR_MAX_PULSE = .0025
+MOTOR_MIN_PULSE = 600
+MOTOR_MAX_PULSE = 2400
 MOTOR_FRAME = .003
-
-MOTOR = Servo(MOTOR_PIN, min_pulse_width=MOTOR_MIN_PULSE, max_pulse_width=MOTOR_MAX_PULSE, frame_width=MOTOR_FRAME)
+PI = pigpio.pi()
+#MOTOR = Servo(MOTOR_PIN, min_pulse_width=MOTOR_MIN_PULSE, max_pulse_width=MOTOR_MAX_PULSE, frame_width=MOTOR_FRAME)
 
 def getSpotlockData():
     return json.dumps(SPOTLOCK_STATE)
@@ -75,7 +76,9 @@ def updateMotor():
     motor_dir = min(max(motor_dir, -90), 90)
     if(abs(SPOTLOCK_STATE["olddir"] - motor_dir) < .1):
         return
-    MOTOR.value = motor_dir / 90.0
+    #MOTOR.value = motor_dir / 90.0
+    width = MOTOR_MIN_PULSE + ((MOTOR_MAX_PULSE - MOTOR_MIN_PULSE) * ((motor_dir/90 + 1 )/ 2))
+    PI.set_servo_pulsewidth(MOTOR_PIN, width)
     SPOTLOCK_STATE["olddir"] = motor_dir
 
 def spotlockmain():
@@ -92,8 +95,9 @@ def spotlockmain():
             updateHeading()
             updateMotor()
         else :
-            MOTOR.mid()
-        sleep(4)
+            #MOTOR.mid()
+            pass
+        sleep(.01)
 
 def start():
     print("starting spotlock thread")
