@@ -97,7 +97,7 @@ def spotlockmain():
         else :
             #MOTOR.mid()
             pass
-        sleep(.01)
+        sleep(.1)
 
 def start():
     print("starting spotlock thread")
