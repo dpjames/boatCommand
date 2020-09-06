@@ -10,12 +10,12 @@ def getLocation():
 def gpsmain():
     global LOC
     while(True):
-        #pos = gpsd.get_current()
-        #LOC[0] = pos.lon
-        #LOC[1] = pos.lat
-        LOC[0]+=.0001
-        LOC[1]+=.0001
-        sleep(.3)
+        pos = gpsd.get_current()
+        LOC[0] = pos.lon
+        LOC[1] = pos.lat
+        #LOC[0]+=.0001
+        #LOC[1]+=.0001
+        sleep(.1)
 def start():
     gpsd.connect()
     print("starting gps thread")

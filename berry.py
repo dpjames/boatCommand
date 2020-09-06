@@ -9,12 +9,12 @@ import collections
 from threading import Thread
 
 
-magXmin = 32767
-magYmin = 32767
-magZmin = 32767
-magXmax = -32767
-magYmax = -32767
-magZmax = -32767
+magXmin = 0
+magYmin = 0
+magZmin = 0
+magXmax = 0
+magYmax = 0
+magZmax = 0
 
 a = datetime.datetime.now()
 

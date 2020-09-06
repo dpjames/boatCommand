@@ -36,6 +36,7 @@ function init(){
    state.map = new ol.Map({
       target : "map",
       layers: [
+         new ol.layer.Tile({source: new ol.source.OSM()}),
          state.baseLayer,
          state.locationLayer
       ],
@@ -181,6 +182,8 @@ function toggleSettings(caller){
    caller.classList.toggle("settingsButton");
    document.querySelector('#settings').classList.toggle('hide');
 }
-
+function findMe(){
+   state.map.getView().setCenter(state.locationFeature.getGeometry().getCoordinates())
+}
 window.onload = init;
 
