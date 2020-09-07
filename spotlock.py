@@ -18,8 +18,8 @@ SPOTLOCK_STATE = {
 }
 
 MOTOR_PIN = 18
-MOTOR_MIN_PULSE = 600
-MOTOR_MAX_PULSE = 2400
+MOTOR_MIN_PULSE = 500
+MOTOR_MAX_PULSE = 2500
 MOTOR_FRAME = .003
 PI = pigpio.pi()
 #MOTOR = Servo(MOTOR_PIN, min_pulse_width=MOTOR_MIN_PULSE, max_pulse_width=MOTOR_MAX_PULSE, frame_width=MOTOR_FRAME)
@@ -97,7 +97,7 @@ def spotlockmain():
         else :
             #MOTOR.mid()
             pass
-        sleep(.1)
+        sleep(.01)
 
 def start():
     print("starting spotlock thread")
@@ -106,6 +106,7 @@ def start():
 
 
 if __name__ == "__main__":
+    berry.start()
     controlSpotLock(True)
     SPOTLOCK_STATE["lockedgps"] = [-120.462, 35.1931]
     spotlockmain()
