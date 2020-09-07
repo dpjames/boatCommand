@@ -55,15 +55,18 @@ def imumain():
     while(True):
 
         #Read the accelerometer,gyroscope and magnetometer values
-        ACCx = -1 * IMU.readACCx()
-        ACCy = -1 * IMU.readACCy()
-        ACCz = -1 * IMU.readACCz()
-        GYRx = IMU.readGYRx()
-        GYRy = IMU.readGYRy()
-        GYRz = IMU.readGYRz()
-        MAGx = IMU.readMAGx()
-        MAGy = IMU.readMAGy()
-        MAGz = IMU.readMAGz()
+        try:
+            ACCx = -1 * IMU.readACCx()
+            ACCy = -1 * IMU.readACCy()
+            ACCz = -1 * IMU.readACCz()
+            GYRx = IMU.readGYRx()
+            GYRy = IMU.readGYRy()
+            GYRz = IMU.readGYRz()
+            MAGx = IMU.readMAGx()
+            MAGy = IMU.readMAGy()
+            MAGz = IMU.readMAGz()
+        except:
+            continue
 
         #update compass
         if MAGx > magXmax:

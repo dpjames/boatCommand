@@ -45,7 +45,7 @@ if __name__ == '__main__':
         berry.start()
         spotlock.start()
         gpsmodule.start()
-        server = HTTPServer(('192.168.1.13', 8000), Handler)
+        server = HTTPServer(('localhost', 8000), Handler)
         print('Starting server, use <Ctrl-C> to stop')
         server.serve_forever()
     except Exception as e:
