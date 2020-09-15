@@ -42,9 +42,12 @@ class Handler(SimpleHTTPRequestHandler):
             self.wfile.write(spotlock.getSpotlockData().encode("utf-8"))
 if __name__ == '__main__':
     try:
-        berry.start()
-        spotlock.start()
-        gpsmodule.start()
+        if hasattr(berry, "start"):
+            berry.start()
+        if hasattr(spotlock, "start"):
+            spotlock.start()
+        if hasattr(gpsmodule, "start"):
+            gpsmodule.start()
         server = HTTPServer(('localhost', 8000), Handler)
         print('Starting server, use <Ctrl-C> to stop')
         server.serve_forever()
