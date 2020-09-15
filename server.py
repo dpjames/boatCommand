@@ -4,27 +4,26 @@ from urllib import parse
 import berry
 import json
 import spotlock
+import compass
 import gpsmodule
 import traceback
 class Handler(SimpleHTTPRequestHandler):
+    def send_json(self, msg):
+       message = json.dumps(msg)
+       self.send_response(200)
+       self.send_header('Content-Type',
+               'text/json; charset=utf-8')
+       self.end_headers()
+       self.wfile.write(message.encode("utf-8"))
     def log_message(self, format, *args):
         pass
     def do_GET(self):
         if(self.path == "/location"):
-            #todo, actually find a location
-            message = json.dumps(gpsmodule.getLocation())
-            self.send_response(200)
-            self.send_header('Content-Type',
-                    'text/json; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(message.encode("utf-8"))
+            self.send_json(gpsmodule.getLocation())
+        elif(self.path == "/compass"):
+            self.send_json(compass.getHeading())
         elif(self.path == "/spotlock"):
-            message = spotlock.getSpotlockData()
-            self.send_response(200)
-            self.send_header('Content-Type',
-                    'text/json; charset=utf-8')
-            self.end_headers()
-            self.wfile.write(message.encode("utf-8"))
+            self.send_json(spotlock.getSpotlockData())
         else:
             self.path = "/public" + self.path
             self.send_response(200)
@@ -37,9 +36,7 @@ class Handler(SimpleHTTPRequestHandler):
             data = self.rfile.read(int(self.headers['Content-Length']))
             data = json.loads(data)
             spotlock.controlSpotLock(data["on"])
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(spotlock.getSpotlockData().encode("utf-8"))
+            self.send_json(spotlock.getSpotlockData())
 if __name__ == '__main__':
     try:
         if hasattr(berry, "start"):

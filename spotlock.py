@@ -26,7 +26,7 @@ try:
     #MOTOR = Servo(MOTOR_PIN, min_pulse_width=MOTOR_MIN_PULSE, max_pulse_width=MOTOR_MAX_PULSE, frame_width=MOTOR_FRAME)
     
     def getSpotlockData():
-        return json.dumps(SPOTLOCK_STATE)
+        return SPOTLOCK_STATE
     
     def controlSpotLock(state):
         global SPOTLOCK_STATE
@@ -57,7 +57,7 @@ try:
         SPOTLOCK_STATE["heading"] = [mag, theta]
     
     def updateMotor():
-        compass_heading = compass.getHeading()
+        compass_heading = (compass.getHeading() + 90) % 360#make east be 0 degrees instead of north
         compx = math.cos(math.radians(compass_heading))
         compy = math.sin(math.radians(compass_heading))
         our_heading = SPOTLOCK_STATE["heading"][1]

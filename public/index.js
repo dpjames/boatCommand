@@ -1,17 +1,18 @@
 const state = {
    location_interval : 500, //how long to wait between location polls, ms
    spotlock_interval : 500, //how long to wait between spotlock polls, ms
+   compass_interval  : 500, //how long to wait between compass  polls, ms
 };
-let locationstyle = new ol.style.Style({
-   image : new ol.style.Circle({
-      radius: 6,
-      fill: new ol.style.Fill({color: 'blue'}),
-      stroke: new ol.style.Stroke({
-         color: "black", 
-         width: 1,
-      })
-   })
-});
+let locationstyle = f => {
+   let rads = state.heading * Math.PI / 180
+   return new ol.style.Style({
+      "image" : new ol.style.Icon({
+         src : "/res/arrow.png",
+         rotation: -1 * rads,
+         scale : .075,
+      }),
+   });
+}
 let spotlockstyle = new ol.style.Style({
    image: new ol.style.Circle({
       radius: 10,
@@ -31,7 +32,7 @@ function init(){
       source : new ol.source.Vector({
          features : [state.locationFeature]
       }),
-      style : f => f == state.locationFeature ? locationstyle : spotlockstyle,
+      style : f => f == state.locationFeature ? locationstyle(f) : spotlockstyle,
    });
    state.map = new ol.Map({
       target : "map",
@@ -49,15 +50,29 @@ function init(){
    });
    fillLocationsSelector();
    locationLoop();
+   compassLoop();
 }
 function locationLoop(){
    const getLocation = () => {
       fetch("/location").then(v => v.json()).then(loc => {
          state.locationFeature.getGeometry().setCoordinates(ol.proj.fromLonLat(loc));
-         setTimeout(locationLoop, state.location_interval);
+         setTimeout(getLocation, state.location_interval);
       });
    }
    getLocation();
+}
+function compassLoop(){
+   const headings = [];
+   const getCompass = () => {
+      fetch("/compass").then(v => v.json()).then(head => {
+         state.heading = head;
+         headings.push(head)
+         updateGraph("compassgraph", headings, [0,360]);
+         document.getElementById("compassvalue").innerHTML = head;
+         setTimeout(getCompass, state.compass_interval);
+      })
+   }
+   getCompass();
 }
 async function fillLocationsSelector(){
    const locations = await (fetch("/locations").then(v => v.json()));

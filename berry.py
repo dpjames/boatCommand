@@ -67,20 +67,20 @@ try:
                 MAGy = IMU.readMAGy()
                 MAGz = IMU.readMAGz()
     
-    #            #update compass
-    #            if MAGx > magXmax:
-    #                magXmax = MAGx
-    #            if MAGy > magYmax:
-    #                magYmax = MAGy
-    #            if MAGz > magZmax:
-    #                magZmax = MAGz
-    #
-    #            if MAGx < magXmin:
-    #                magXmin = MAGx
-    #            if MAGy < magYmin:
-    #                magYmin = MAGy
-    #            if MAGz < magZmin:
-    #                magZmin = MAGz
+                #update compass
+                if MAGx > magXmax:
+                    magXmax = MAGx
+                if MAGy > magYmax:
+                    magYmax = MAGy
+                if MAGz > magZmax:
+                    magZmax = MAGz
+    
+                if MAGx < magXmin:
+                    magXmin = MAGx
+                if MAGy < magYmin:
+                    magYmin = MAGy
+                if MAGz < magZmin:
+                    magZmin = MAGz
     
     
     
@@ -194,5 +194,6 @@ try:
     
     if __name__ == "__main__":
         imumain()
-except:
+except Exception as e:
+    print(e)
     print("berry.py cannot be opened")

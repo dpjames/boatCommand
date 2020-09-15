@@ -198,7 +198,9 @@ h1 {
 #sensors #spotlockdirgraph, #sensors #spotlockmaggraph {
    height : 45px;
 }
-
+#compassvalue {
+   display : inline;
+}
 button {
    cursor : pointer;
 }
