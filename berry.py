@@ -172,8 +172,8 @@ try:
                         #"xa" : toFixed(VALS["xacc"], 1000),
                         "head" : toFixed(VALS["tchead"], 10),
                     }
-                    print("\r", end=" ")
-                    print(json.dumps(ob), end=" ")
+                    #print("\r", end=" ")
+                    #print(json.dumps(ob), end=" ")
                 if(count % 1000 == 0):
                     VALS["xv"] = 0
                     VALS["yv"] = 0

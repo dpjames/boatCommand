@@ -9,7 +9,7 @@ try:
     import math
     import berry
     import pigpio
-    
+    import gpiozero    
     SPOTLOCK_STATE = {
         "running" : False, 
         "lockedgps" : [0,0],
@@ -23,6 +23,10 @@ try:
     MOTOR_MAX_PULSE = 2500
     MOTOR_FRAME = .003
     PI = pigpio.pi()
+
+    RELAY_PIN = 24
+    RELAY = gpiozero.OutputDevice(RELAY_PIN, active_high=True, initial_value=False)
+
     #MOTOR = Servo(MOTOR_PIN, min_pulse_width=MOTOR_MIN_PULSE, max_pulse_width=MOTOR_MAX_PULSE, frame_width=MOTOR_FRAME)
     
     def getSpotlockData():
@@ -57,6 +61,12 @@ try:
         SPOTLOCK_STATE["heading"] = [mag, theta]
     
     def updateMotor():
+        mag = SPOTLOCK_STATE["heading"][0]
+        print(mag)
+        if(mag > 3.14e-05):
+            RELAY.on()
+        else :
+            RELAY.off()
         compass_heading = (compass.getHeading() + 90) % 360#make east be 0 degrees instead of north
         compx = math.cos(math.radians(compass_heading))
         compy = math.sin(math.radians(compass_heading))
